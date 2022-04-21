@@ -7,6 +7,7 @@
 
 #include "AVCodecHandler.hpp"
 #include "QueueDef.h"
+#include "YUVDataDefine.h"
 
 std::atomic<bool> m_bThreadRunning(false);// 在多线程中是原子操作
 
@@ -145,6 +146,8 @@ void AVCodecHandler::stdThreadSleep(int mseconds){
 void AVCodecHandler::doReadMediaFrameThread() {
   while (m_bThreadRunning) {
     // read control一定要控制着读，要不然一下子就会被读完，你的内存会暴涨
+    m_bThreadRunning = true;
+//    if (m_videoPacketQueue.size() > MAX_VIDEO_FRAME_IN_QUEUE )
   }
 }
 
