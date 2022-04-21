@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9055A1BC2810DBAC00D5DA4E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9055A1BB2810DBAC00D5DA4E /* AppDelegate.m */; };
-		9055A1C22810DBAC00D5DA4E /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9055A1C12810DBAC00D5DA4E /* RootViewController.m */; };
+		9055A1C22810DBAC00D5DA4E /* RootViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9055A1C12810DBAC00D5DA4E /* RootViewController.mm */; };
 		9055A1C72810DBB300D5DA4E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9055A1C62810DBB300D5DA4E /* Assets.xcassets */; };
 		9055A1CA2810DBB300D5DA4E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9055A1C82810DBB300D5DA4E /* LaunchScreen.storyboard */; };
 		9055A1CD2810DBB300D5DA4E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9055A1CC2810DBB300D5DA4E /* main.m */; };
@@ -30,6 +30,7 @@
 		9055A1F32810DDFF00D5DA4E /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1F22810DDFF00D5DA4E /* VideoToolbox.framework */; };
 		9055A1F92810DE4300D5DA4E /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1F82810DE4300D5DA4E /* CoreMedia.framework */; };
 		9055A1FC2810E04200D5DA4E /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1F42810DE0E00D5DA4E /* AudioToolbox.framework */; };
+		9055A1FF2810E0F100D5DA4E /* AVCodecHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9055A1FD2810E0F100D5DA4E /* AVCodecHandler.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,7 +38,7 @@
 		9055A1BA2810DBAC00D5DA4E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9055A1BB2810DBAC00D5DA4E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		9055A1C02810DBAC00D5DA4E /* RootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
-		9055A1C12810DBAC00D5DA4E /* RootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
+		9055A1C12810DBAC00D5DA4E /* RootViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RootViewController.mm; sourceTree = "<group>"; };
 		9055A1C62810DBB300D5DA4E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9055A1C92810DBB300D5DA4E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9055A1CB2810DBB300D5DA4E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -61,6 +62,8 @@
 		9055A1F42810DE0E00D5DA4E /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		9055A1F62810DE3200D5DA4E /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		9055A1F82810DE4300D5DA4E /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		9055A1FD2810E0F100D5DA4E /* AVCodecHandler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AVCodecHandler.cpp; sourceTree = "<group>"; };
+		9055A1FE2810E0F100D5DA4E /* AVCodecHandler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AVCodecHandler.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,7 +118,9 @@
 				9055A1BA2810DBAC00D5DA4E /* AppDelegate.h */,
 				9055A1BB2810DBAC00D5DA4E /* AppDelegate.m */,
 				9055A1C02810DBAC00D5DA4E /* RootViewController.h */,
-				9055A1C12810DBAC00D5DA4E /* RootViewController.m */,
+				9055A1C12810DBAC00D5DA4E /* RootViewController.mm */,
+				9055A1FE2810E0F100D5DA4E /* AVCodecHandler.hpp */,
+				9055A1FD2810E0F100D5DA4E /* AVCodecHandler.cpp */,
 				9055A1C62810DBB300D5DA4E /* Assets.xcassets */,
 				9055A1C82810DBB300D5DA4E /* LaunchScreen.storyboard */,
 				9055A1CB2810DBB300D5DA4E /* Info.plist */,
@@ -218,8 +223,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9055A1C22810DBAC00D5DA4E /* RootViewController.m in Sources */,
+				9055A1C22810DBAC00D5DA4E /* RootViewController.mm in Sources */,
 				9055A1BC2810DBAC00D5DA4E /* AppDelegate.m in Sources */,
+				9055A1FF2810E0F100D5DA4E /* AVCodecHandler.cpp in Sources */,
 				9055A1CD2810DBB300D5DA4E /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

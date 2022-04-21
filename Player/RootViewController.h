@@ -6,9 +6,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#include <libavformat/avformat.h>
-#include <libavcodec/avcodec.h>
 
+/*
+ 使用 C++ 可以跨平台使用写大部分
+ */
 @interface RootViewController : UIViewController
 
 

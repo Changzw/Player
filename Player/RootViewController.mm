@@ -6,8 +6,11 @@
 //
 
 #import "RootViewController.h"
+#import "AVCodecHandler.hpp"
 
-@interface RootViewController ()
+@interface RootViewController () {
+  AVCodecHandler _playerHandler;
+}
 
 @end
 
@@ -17,10 +20,7 @@
   [super viewDidLoad];
   
   [self.view setBackgroundColor:[UIColor blueColor]];
-  avcodec_register_all();
-  const char *config = avcodec_configuration();
   
-  printf("%d\n, %s\n",  avcodec_version(), config);
 }
 
 
