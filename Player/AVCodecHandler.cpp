@@ -51,7 +51,20 @@ int AVCodecHandler::initVideoCodec(){
   }
   
   av_dump_format(m_pformatCtx, 0, filPath, 0);
+  printf("---------------------------\n");
   
+  m_videoStreamIndex = -1;
+  m_audioStreamIndex = -1;
+  for (int i=0; i<(int)m_pformatCtx->nb_streams; i++){
+    AVCodecParameters *codecParamters = m_pformatCtx->streams[i]->codecpar;
+    if (codecParamters->codec_type == AVMEDIA_TYPE_VIDEO) {
+      m_videoStreamIndex = i;
+    }else if (codecParamters->codec_type == AVMEDIA_TYPE_AUDIO) {
+      m_audioStreamIndex = i;
+    }
+  }
+  
+  printf("Stream IDX: Video: %d, Audio: %d", m_videoStreamIndex, m_audioStreamIndex);
   return 0;
 }
 

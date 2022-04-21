@@ -16,10 +16,10 @@
 
 #include <stdio.h>
 extern "C" {
-#include <libavformat/avformat.h>
-#include <libavcodec/avcodec.h>
-#include <libswscale/swscale.h>
-#include <libavutil/avutil.h>
+  #include <libavformat/avformat.h>
+  #include <libavcodec/avcodec.h>
+  #include <libswscale/swscale.h>
+  #include <libavutil/avutil.h>
 }
 
 enum MediaType {
@@ -61,6 +61,8 @@ private:
     视频：
    */
   AVFormatContext *m_pformatCtx = NULL;
+  int             m_videoStreamIndex = -1;// why not 0?
+  int             m_audioStreamIndex = -1;
 };
 
 
