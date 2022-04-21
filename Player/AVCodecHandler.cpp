@@ -59,8 +59,30 @@ int AVCodecHandler::initVideoCodec(){
     AVCodecParameters *codecParamters = m_pformatCtx->streams[i]->codecpar;
     if (codecParamters->codec_type == AVMEDIA_TYPE_VIDEO) {
       m_videoStreamIndex = i;
+      AVCodec *codec = avcodec_find_decoder(codecParamters->codec_id);// 解码信息
+      if (codec == NULL) {
+        printf("avcodec_find_decoder failed...\n");
+        return -1;
+      }
+      m_pVideoCodecCtx = avcodec_alloc_context3(codec);// 申请解码器上下文
+      avcodec_parameters_to_context(m_pVideoCodecCtx, codecParamters);//copy param to context
+      if (avcodec_open2(m_pVideoCodecCtx, codec, NULL) < 0) {
+        printf("v: avcodec_open2 video failed...\n");
+        return -1;
+      }
     }else if (codecParamters->codec_type == AVMEDIA_TYPE_AUDIO) {
       m_audioStreamIndex = i;
+      AVCodec *codec = avcodec_find_decoder(codecParamters->codec_id);// 解码信息
+      if (codec == NULL) {
+        printf("avcodec_find_decoder failed...\n");
+        return -1;
+      }
+      m_pAudioCodecCtx = avcodec_alloc_context3(codec);// 申请解码器上下文
+      avcodec_parameters_to_context(m_pAudioCodecCtx, codecParamters);//copy param to context
+      if (avcodec_open2(m_pAudioCodecCtx, codec, NULL) < 0) {
+        printf("a: avcodec_open2 audio failed...\n");
+        return -1;
+      }
     }
   }
   

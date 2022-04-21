@@ -63,6 +63,9 @@ private:
   AVFormatContext *m_pformatCtx = NULL;
   int             m_videoStreamIndex = -1;// why not 0?
   int             m_audioStreamIndex = -1;
+  
+  AVCodecContext  *m_pVideoCodecCtx = NULL;
+  AVCodecContext  *m_pAudioCodecCtx = NULL;
 };
 
 
