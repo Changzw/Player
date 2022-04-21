@@ -17,3 +17,33 @@ AVCodecHandler::AVCodecHandler() {
 AVCodecHandler::~AVCodecHandler() {
   
 }
+
+void AVCodecHandler::setVideoFilePath(const std::string &path){
+  
+}
+
+std::string AVCodecHandler::getVideoFilePath(){
+  return m_videoPathString;
+}
+int AVCodecHandler::getVideoWidth(){
+  return m_videoWidth;
+  
+}
+int AVCodecHandler::getVideoHeight(){
+  return m_videoHeight;
+}
+
+int AVCodecHandler::initVideoCodec(){
+  
+  return 0;
+}
+int AVCodecHandler::destoryVideoCodec(){
+  
+  return 0;
+}
+void AVCodecHandler::startPlayVideo() {
+  
+}
+void AVCodecHandler::stopPlayVideo(){
+  
+}

@@ -24,7 +24,7 @@ extern "C" {
 
 enum MediaType {
   MediaTypeVideo = 0,
-  MediaTypeAudio
+  MediaType
 };
 
 enum MediaPlayStatus {
@@ -40,8 +40,20 @@ public:
   AVCodecHandler();
   ~AVCodecHandler();
   
-  void setVideoFilePath(const std::string &path);
+  void        setVideoFilePath(const std::string &path);
+  std::string getVideoFilePath();
+  int         getVideoWidth();
+  int         getVideoHeight();
+  
+  int         initVideoCodec();
+  int         destoryVideoCodec();
+  
+  void        startPlayVideo();
+  void        stopPlayVideo();
 private:
+  int         m_videoWidth = 0;
+  int         m_videoHeight = 0;
+  std::string m_videoPathString = "";
   
 };
 
