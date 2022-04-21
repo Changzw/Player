@@ -25,6 +25,11 @@
 		9055A1E92810DC6600D5DA4E /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1E82810DC6600D5DA4E /* libz.tbd */; };
 		9055A1EB2810DC6C00D5DA4E /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1EA2810DC6C00D5DA4E /* libbz2.tbd */; };
 		9055A1ED2810DC7100D5DA4E /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1EC2810DC7100D5DA4E /* libiconv.tbd */; };
+		9055A1EF2810DDE600D5DA4E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1EE2810DDE600D5DA4E /* AVFoundation.framework */; };
+		9055A1F12810DDEC00D5DA4E /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1F02810DDEC00D5DA4E /* CoreAudio.framework */; };
+		9055A1F32810DDFF00D5DA4E /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1F22810DDFF00D5DA4E /* VideoToolbox.framework */; };
+		9055A1F92810DE4300D5DA4E /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1F82810DE4300D5DA4E /* CoreMedia.framework */; };
+		9055A1FC2810E04200D5DA4E /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1F42810DE0E00D5DA4E /* AudioToolbox.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +55,12 @@
 		9055A1E82810DC6600D5DA4E /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9055A1EA2810DC6C00D5DA4E /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 		9055A1EC2810DC7100D5DA4E /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		9055A1EE2810DDE600D5DA4E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		9055A1F02810DDEC00D5DA4E /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		9055A1F22810DDFF00D5DA4E /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		9055A1F42810DE0E00D5DA4E /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		9055A1F62810DE3200D5DA4E /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		9055A1F82810DE4300D5DA4E /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +68,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9055A1FC2810E04200D5DA4E /* AudioToolbox.framework in Frameworks */,
+				9055A1F92810DE4300D5DA4E /* CoreMedia.framework in Frameworks */,
+				9055A1F32810DDFF00D5DA4E /* VideoToolbox.framework in Frameworks */,
+				9055A1F12810DDEC00D5DA4E /* CoreAudio.framework in Frameworks */,
+				9055A1EF2810DDE600D5DA4E /* AVFoundation.framework in Frameworks */,
 				9055A1ED2810DC7100D5DA4E /* libiconv.tbd in Frameworks */,
 				9055A1EB2810DC6C00D5DA4E /* libbz2.tbd in Frameworks */,
 				9055A1E92810DC6600D5DA4E /* libz.tbd in Frameworks */,
@@ -111,6 +127,12 @@
 		9055A1D32810DC5400D5DA4E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9055A1F82810DE4300D5DA4E /* CoreMedia.framework */,
+				9055A1F62810DE3200D5DA4E /* CoreVideo.framework */,
+				9055A1F42810DE0E00D5DA4E /* AudioToolbox.framework */,
+				9055A1F22810DDFF00D5DA4E /* VideoToolbox.framework */,
+				9055A1F02810DDEC00D5DA4E /* CoreAudio.framework */,
+				9055A1EE2810DDE600D5DA4E /* AVFoundation.framework */,
 				9055A1EC2810DC7100D5DA4E /* libiconv.tbd */,
 				9055A1EA2810DC6C00D5DA4E /* libbz2.tbd */,
 				9055A1E82810DC6600D5DA4E /* libz.tbd */,

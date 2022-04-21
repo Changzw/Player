@@ -15,7 +15,12 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  // Do any additional setup after loading the view.
+  
+  [self.view setBackgroundColor:[UIColor blueColor]];
+  avcodec_register_all();
+  const char *config = avcodec_configuration();
+  
+  printf("%d\n, %s\n",  avcodec_version(), config);
 }
 
 

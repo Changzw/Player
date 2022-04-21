@@ -6,6 +6,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
 
 @interface RootViewController : UIViewController
 
