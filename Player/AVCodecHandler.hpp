@@ -15,6 +15,8 @@
 #include <vector>
 
 #include <stdio.h>
+#include "QueueDef.h"
+
 extern "C" {
   #include <libavformat/avformat.h>
   #include <libavcodec/avcodec.h>
@@ -50,6 +52,16 @@ public:
   
   void        startPlayVideo();
   void        stopPlayVideo();
+  
+private:
+  void doReadMediaFrameThread();
+  void doAudioDecodePlayThread();
+  void doVideoDecodePlayThread();
+  
+  void startMediaProcessThreads();
+  void waitAllTreadsExit();
+  
+  void stdThreadSleep(int mseconds);
 private:
   int         m_videoWidth = 0;
   int         m_videoHeight = 0;
@@ -66,6 +78,14 @@ private:
   
   AVCodecContext  *m_pVideoCodecCtx = NULL;
   AVCodecContext  *m_pAudioCodecCtx = NULL;
+  
+  // 时间基
+  AVRational      m_vStreamTimeRational;
+  AVRational      m_aStreamTimeRational;
+  
+  MediaQueue<AVPacket *> m_audioPacketQueue;
+  MediaQueue<AVPacket *> m_videoPacketQueue;
+  
 };
 
 

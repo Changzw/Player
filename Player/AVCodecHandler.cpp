@@ -6,6 +6,9 @@
 //
 
 #include "AVCodecHandler.hpp"
+#include "QueueDef.h"
+
+std::atomic<bool> m_bThreadRunning(false);// 在多线程中是原子操作
 
 AVCodecHandler::AVCodecHandler() {
 //  avcodec_register_all();
@@ -86,7 +89,21 @@ int AVCodecHandler::initVideoCodec(){
     }
   }
   
-  printf("Stream IDX: Video: %d, Audio: %d", m_videoStreamIndex, m_audioStreamIndex);
+  m_videoWidth = m_pVideoCodecCtx->width;
+  m_videoHeight = m_pVideoCodecCtx->height;
+  
+  /*
+   时间基，用于编解码，使用 AVRational类型保存
+   */
+  AVStream *videoStream = m_pformatCtx->streams[m_videoStreamIndex];
+  AVStream *audioStream = m_pformatCtx->streams[m_audioStreamIndex];
+  m_vStreamTimeRational = videoStream->time_base;
+  m_aStreamTimeRational = audioStream->time_base;
+  printf("V Time base num: %d, den: %d\n", m_vStreamTimeRational.num, m_vStreamTimeRational.den);
+  printf("A Time base num: %d, den: %d\n", m_aStreamTimeRational.num, m_aStreamTimeRational.den);
+  
+  printf("Stream IDX: Video: %d, Audio: %d\n", m_videoStreamIndex, m_audioStreamIndex);
+  printf("Stream Size: Height: %d, Width: %d\n", m_videoHeight, m_videoWidth);
   return 0;
 }
 
@@ -100,5 +117,40 @@ void AVCodecHandler::startPlayVideo() {
 }
 
 void AVCodecHandler::stopPlayVideo(){
+  
+}
+
+void AVCodecHandler::startMediaProcessThreads() {
+  m_bThreadRunning = true;
+  // C++ 11 线程
+  std::thread readThread(&AVCodecHandler::doReadMediaFrameThread,this);
+  readThread.detach();
+  
+  std::thread audioThread(&AVCodecHandler::doAudioDecodePlayThread,this);
+  audioThread.detach();
+  
+  std::thread videoThread(&AVCodecHandler::doVideoDecodePlayThread,this);
+  videoThread.detach();
+}
+
+void AVCodecHandler::waitAllTreadsExit(){
+  
+}
+
+void AVCodecHandler::stdThreadSleep(int mseconds){
+  std::chrono::milliseconds sleepTime(mseconds);
+  std::this_thread::sleep_for(sleepTime);
+}
+
+void AVCodecHandler::doReadMediaFrameThread() {
+  while (m_bThreadRunning) {
+    // read control一定要控制着读，要不然一下子就会被读完，你的内存会暴涨
+  }
+}
+
+void AVCodecHandler::doAudioDecodePlayThread(){
+  
+}
+void AVCodecHandler::doVideoDecodePlayThread(){
   
 }
