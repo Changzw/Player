@@ -20,6 +20,9 @@
   [super viewDidLoad];
   
   [self.view setBackgroundColor:[UIColor blueColor]];
+  NSString *filePath = [NSBundle.mainBundle pathForResource:@"out10s.mp4" ofType:nil];
+  _playerHandler.setVideoFilePath(filePath.UTF8String);
+  _playerHandler.initVideoCodec();
   
 }
 

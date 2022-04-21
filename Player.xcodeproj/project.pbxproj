@@ -31,6 +31,7 @@
 		9055A1F92810DE4300D5DA4E /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1F82810DE4300D5DA4E /* CoreMedia.framework */; };
 		9055A1FC2810E04200D5DA4E /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9055A1F42810DE0E00D5DA4E /* AudioToolbox.framework */; };
 		9055A1FF2810E0F100D5DA4E /* AVCodecHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9055A1FD2810E0F100D5DA4E /* AVCodecHandler.cpp */; };
+		9055A20228118D9D00D5DA4E /* out10s.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9055A20128118D9C00D5DA4E /* out10s.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +65,7 @@
 		9055A1F82810DE4300D5DA4E /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		9055A1FD2810E0F100D5DA4E /* AVCodecHandler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AVCodecHandler.cpp; sourceTree = "<group>"; };
 		9055A1FE2810E0F100D5DA4E /* AVCodecHandler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AVCodecHandler.hpp; sourceTree = "<group>"; };
+		9055A20128118D9C00D5DA4E /* out10s.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = out10s.mp4; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,14 +117,13 @@
 		9055A1B92810DBAC00D5DA4E /* Player */ = {
 			isa = PBXGroup;
 			children = (
+				9055A20028118D8D00D5DA4E /* source */,
 				9055A1BA2810DBAC00D5DA4E /* AppDelegate.h */,
 				9055A1BB2810DBAC00D5DA4E /* AppDelegate.m */,
 				9055A1C02810DBAC00D5DA4E /* RootViewController.h */,
 				9055A1C12810DBAC00D5DA4E /* RootViewController.mm */,
 				9055A1FE2810E0F100D5DA4E /* AVCodecHandler.hpp */,
 				9055A1FD2810E0F100D5DA4E /* AVCodecHandler.cpp */,
-				9055A1C62810DBB300D5DA4E /* Assets.xcassets */,
-				9055A1C82810DBB300D5DA4E /* LaunchScreen.storyboard */,
 				9055A1CB2810DBB300D5DA4E /* Info.plist */,
 				9055A1CC2810DBB300D5DA4E /* main.m */,
 			);
@@ -153,6 +154,16 @@
 				9055A1D52810DC5400D5DA4E /* libswscale.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9055A20028118D8D00D5DA4E /* source */ = {
+			isa = PBXGroup;
+			children = (
+				9055A20128118D9C00D5DA4E /* out10s.mp4 */,
+				9055A1C62810DBB300D5DA4E /* Assets.xcassets */,
+				9055A1C82810DBB300D5DA4E /* LaunchScreen.storyboard */,
+			);
+			path = source;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -213,6 +224,7 @@
 			files = (
 				9055A1CA2810DBB300D5DA4E /* LaunchScreen.storyboard in Resources */,
 				9055A1C72810DBB300D5DA4E /* Assets.xcassets in Resources */,
+				9055A20228118D9D00D5DA4E /* out10s.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

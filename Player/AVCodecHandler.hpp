@@ -54,7 +54,13 @@ private:
   int         m_videoWidth = 0;
   int         m_videoHeight = 0;
   std::string m_videoPathString = "";
-  
+  /*
+   文件的根所有流媒体文件都要通过它来处理, 所有视频信息的发源地
+   两条流：
+    音频：
+    视频：
+   */
+  AVFormatContext *m_pformatCtx = NULL;
 };
 
 
