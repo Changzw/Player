@@ -11,7 +11,6 @@
 @interface RootViewController () {
   AVCodecHandler _playerHandler;
 }
-
 @end
 
 @implementation RootViewController
@@ -23,8 +22,5 @@
   NSString *filePath = [NSBundle.mainBundle pathForResource:@"out10s.mp4" ofType:nil];
   _playerHandler.setVideoFilePath(filePath.UTF8String);
   _playerHandler.initVideoCodec();
-  
-}
-
-
+} 
 @end
