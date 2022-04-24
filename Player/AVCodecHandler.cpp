@@ -143,12 +143,59 @@ void AVCodecHandler::stdThreadSleep(int mseconds){
   std::this_thread::sleep_for(sleepTime);
 }
 
+void AVCodecHandler::readMediaPacket() {
+  AVPacket *packet = (AVPacket*)malloc(sizeof(AVPacket));
+  if (NULL == packet) {
+    return;
+  }
+  av_init_packet(packet);
+  m_eMediaPlayStatus = MediaPlayStatusPlaying;
+  int retValue = av_read_frame(m_pformatCtx, packet);
+  if (retValue == 0) {
+    if (packet->stream_index == m_videoStreamIndex) {
+      if (!av_dup_packet(packet)) {// 这个是啥？
+        m_videoPacketQueue.enqueue(packet);
+      }else {
+        freePacket(packet);
+      }
+    } else if (packet->stream_index == m_audioStreamIndex) {
+      if (!av_dup_packet(packet)) {
+        m_audioPacketQueue.enqueue(packet);
+      }else {
+        freePacket(packet);
+      }
+    }
+  }else if (retValue < 0) {
+    if ((m_bReadFileEOF == false) && (retValue == AVERROR_EOF)) {
+      m_bReadFileEOF = true;
+    }
+  }
+}
+
 void AVCodecHandler::doReadMediaFrameThread() {
   while (m_bThreadRunning) {
-    // read control一定要控制着读，要不然一下子就会被读完，你的内存会暴涨
+    /*
+     read control一定要控制着读，要不然一下子就会被读完，你的内存会暴涨
+     */
     m_bThreadRunning = true;
-//    if (m_videoPacketQueue.size() > MAX_VIDEO_FRAME_IN_QUEUE )
+    if (m_eMediaPlayStatus == MediaPlayStatusPause) {
+      stdThreadSleep(10);// 让 thread放弃 cpu 资源
+      continue;
+    }
+    if (m_videoPacketQueue.size() > MAX_VIDEO_FRAME_IN_QUEUE && m_audioPacketQueue.size() > MAX_AUDIO_FRAME_IN_QUEUE) {
+      stdThreadSleep(10);
+      continue;
+    }
+    
+    if (m_bReadFileEOF == false) {
+      readMediaPacket();
+    }else {
+      stdThreadSleep(10);// 当文件读完以后，还有几帧需要解码，队列里面还有数据
+    }
+    
   }
+  
+  m_bThreadRunning = true;
 }
 
 void AVCodecHandler::doAudioDecodePlayThread(){
@@ -156,4 +203,12 @@ void AVCodecHandler::doAudioDecodePlayThread(){
 }
 void AVCodecHandler::doVideoDecodePlayThread(){
   
+}
+
+void AVCodecHandler::freePacket(AVPacket* pkt) {
+  if(pkt == NULL ){
+    return;
+  }
+  av_free_packet(pkt);
+  free(pkt);
 }

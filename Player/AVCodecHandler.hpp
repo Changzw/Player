@@ -87,6 +87,13 @@ private:
   MediaQueue<AVPacket *> m_audioPacketQueue;
   MediaQueue<AVPacket *> m_videoPacketQueue;
   
+  MediaPlayStatus m_eMediaPlayStatus;
+  bool            m_bReadFileEOF = false;
+  
+  
+  void     readMediaPacket();
+  void     freePacket(AVPacket* pkt);
+  
 };
 
 

@@ -21,8 +21,10 @@ public:
   ~MediaQueue() {
   }
   
-  void enqueu(const T &t) {
-    
+  void enqueue(const T &t) {
+    m_mutex.lock();
+    list<T>::push_back(t);
+    m_mutex.unlock();
   }
   
   T dequeue() {
