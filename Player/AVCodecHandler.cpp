@@ -44,25 +44,25 @@ int AVCodecHandler::initVideoCodec(){
     return  -1;
   }
   const char* filPath = m_videoPathString.c_str();
-  if (avformat_open_input(&m_pformatCtx, filPath, NULL, NULL) != 0) {
+  if (avformat_open_input(&m_pFormatCtx, filPath, NULL, NULL) != 0) {
     printf("avformat open input failed...\n");
     return -1;
   }
   
-  if (avformat_find_stream_info(m_pformatCtx, NULL) < 0) {
+  if (avformat_find_stream_info(m_pFormatCtx, NULL) < 0) {
     printf("avformat find stream failed...\n");
     return -1;
   }
   
-  av_dump_format(m_pformatCtx, 0, filPath, 0);
+  av_dump_format(m_pFormatCtx, 0, filPath, 0);
   printf("---------------------------\n");
   
-  m_videoStreamIndex = -1;
-  m_audioStreamIndex = -1;
-  for (int i=0; i<(int)m_pformatCtx->nb_streams; i++){
-    AVCodecParameters *codecParamters = m_pformatCtx->streams[i]->codecpar;
+  m_videoStreamIdx = -1;
+  m_audioStreamIdx = -1;
+  for (int i=0; i<(int)m_pFormatCtx->nb_streams; i++){
+    AVCodecParameters *codecParamters = m_pFormatCtx->streams[i]->codecpar;
     if (codecParamters->codec_type == AVMEDIA_TYPE_VIDEO) {
-      m_videoStreamIndex = i;
+      m_videoStreamIdx = i;
       AVCodec *codec = avcodec_find_decoder(codecParamters->codec_id);// 解码信息
       if (codec == NULL) {
         printf("avcodec_find_decoder failed...\n");
@@ -75,7 +75,7 @@ int AVCodecHandler::initVideoCodec(){
         return -1;
       }
     }else if (codecParamters->codec_type == AVMEDIA_TYPE_AUDIO) {
-      m_audioStreamIndex = i;
+      m_audioStreamIdx = i;
       AVCodec *codec = avcodec_find_decoder(codecParamters->codec_id);// 解码信息
       if (codec == NULL) {
         printf("avcodec_find_decoder failed...\n");
@@ -96,14 +96,14 @@ int AVCodecHandler::initVideoCodec(){
   /*
    时间基，用于编解码，使用 AVRational类型保存
    */
-  AVStream *videoStream = m_pformatCtx->streams[m_videoStreamIndex];
-  AVStream *audioStream = m_pformatCtx->streams[m_audioStreamIndex];
+  AVStream *videoStream = m_pFormatCtx->streams[m_videoStreamIdx];
+  AVStream *audioStream = m_pFormatCtx->streams[m_audioStreamIdx];
   m_vStreamTimeRational = videoStream->time_base;
   m_aStreamTimeRational = audioStream->time_base;
   printf("V Time base num: %d, den: %d\n", m_vStreamTimeRational.num, m_vStreamTimeRational.den);
   printf("A Time base num: %d, den: %d\n", m_aStreamTimeRational.num, m_aStreamTimeRational.den);
   
-  printf("Stream IDX: Video: %d, Audio: %d\n", m_videoStreamIndex, m_audioStreamIndex);
+  printf("Stream IDX: Video: %d, Audio: %d\n", m_videoStreamIdx, m_audioStreamIdx);
   printf("Stream Size: Height: %d, Width: %d\n", m_videoHeight, m_videoWidth);
   return 0;
 }
@@ -124,13 +124,13 @@ void AVCodecHandler::stopPlayVideo(){
 void AVCodecHandler::startMediaProcessThreads() {
   m_bThreadRunning = true;
   // C++ 11 线程
-  std::thread readThread(&AVCodecHandler::doReadMediaFrameThread,this);
+  std::thread readThread(&AVCodecHandler::doReadMediaFrameThread, this);
   readThread.detach();
   
-  std::thread audioThread(&AVCodecHandler::doAudioDecodePlayThread,this);
+  std::thread audioThread(&AVCodecHandler::doAudioDecodePlayThread, this);
   audioThread.detach();
   
-  std::thread videoThread(&AVCodecHandler::doVideoDecodePlayThread,this);
+  std::thread videoThread(&AVCodecHandler::doVideoDecodePlayThread, this);
   videoThread.detach();
 }
 
@@ -150,15 +150,15 @@ void AVCodecHandler::readMediaPacket() {
   }
   av_init_packet(packet);
   m_eMediaPlayStatus = MediaPlayStatusPlaying;
-  int retValue = av_read_frame(m_pformatCtx, packet);
+  int retValue = av_read_frame(m_pFormatCtx, packet);
   if (retValue == 0) {
-    if (packet->stream_index == m_videoStreamIndex) {
+    if (packet->stream_index == m_videoStreamIdx) {
       if (!av_dup_packet(packet)) {// 这个是啥？
         m_videoPacketQueue.enqueue(packet);
       }else {
         freePacket(packet);
       }
-    } else if (packet->stream_index == m_audioStreamIndex) {
+    } else if (packet->stream_index == m_audioStreamIdx) {
       if (!av_dup_packet(packet)) {
         m_audioPacketQueue.enqueue(packet);
       }else {
@@ -198,11 +198,95 @@ void AVCodecHandler::doReadMediaFrameThread() {
   m_bThreadRunning = true;
 }
 
+//MARK: -
 void AVCodecHandler::doAudioDecodePlayThread(){
+  if (m_pFormatCtx == NULL) {
+    return;
+  }
+  if (m_pAudioFrame == NULL) {
+    m_pAudioFrame = av_frame_alloc();
+  }
+  while (m_bThreadRunning) {
+    m_bThreadRunning = true;
+    if(m_eMediaPlayStatus == MediaPlayStatusPause) {
+      stdThreadSleep(10);
+      continue;
+    }
+    if (m_audioPacketQueue.isEmpty()){
+      stdThreadSleep(10);
+      continue;
+    }
+    
+    AVPacket *pkt = (AVPacket *)m_audioPacketQueue.dequeue();
+    if (pkt == NULL) {
+      break;;
+    }
+    if (!m_bThreadRunning) {
+      freePacket(pkt);
+      break;
+    }
+    
+    int retValue = avcodec_send_packet(m_pAudioCodecCtx, pkt);
+    if (retValue != 0) {
+      freePacket(pkt);
+      continue;
+    }
+    int decodeRet = avcodec_receive_frame(m_pAudioCodecCtx, m_pAudioFrame);
+    if ( decodeRet == 0 ) {
+      // .... 播放音乐
+    }
+    freePacket(pkt);
+  }
   
+  m_bThreadRunning = false;
+  printf("audio decode shw thread exit...\n");
 }
+
+//MARK: -
 void AVCodecHandler::doVideoDecodePlayThread(){
+  if (m_pFormatCtx == NULL) {
+    return;
+  }
+  if (m_pVideoFrame == NULL) {
+    m_pVideoFrame = av_frame_alloc();
+  }
+  while (m_bThreadRunning) {
+    m_bThreadRunning = true;
+    if(m_eMediaPlayStatus == MediaPlayStatusPause) {
+      stdThreadSleep(10);
+      continue;
+    }
+    if (m_videoPacketQueue.isEmpty()){
+      stdThreadSleep(10);
+      continue;
+    }
+    
+    AVPacket *pkt = (AVPacket*)m_videoPacketQueue.dequeue();
+    if (pkt == NULL) {
+      break;
+    }
+    if (!m_bThreadRunning) {
+      freePacket(pkt);
+      break;
+    }
+    
+    int retValue = avcodec_send_packet(m_pVideoCodecCtx, pkt);
+    if (retValue != 0) {
+      freePacket(pkt);
+      continue;
+    }
+    
+    int decodeRet = avcodec_receive_frame(m_pVideoCodecCtx, m_pVideoFrame);
+    if (decodeRet == 0) {
+      // 解码成功渲染
+      
+    }
+    
+    freePacket(pkt);
+  }
   
+  m_bThreadRunning = false;
+  printf("video decode shw thread exit...\n");
 }
 
 void AVCodecHandler::freePacket(AVPacket* pkt) {
@@ -211,4 +295,46 @@ void AVCodecHandler::freePacket(AVPacket* pkt) {
   }
   av_free_packet(pkt);
   free(pkt);
+}
+
+void AVCodecHandler::resetAllMediaPlayerParameters() {
+  m_pFormatCtx       = NULL;
+  m_pVideoCodecCtx   = NULL;
+  m_pAudioCodecCtx   = NULL;
+//  m_pYUVFrame        = NULL;
+  m_pVideoFrame      = NULL;
+  m_pAudioFrame      = NULL;
+//  m_pAudioSwrCtx     = NULL;
+//  m_pVideoSwsCtx     = NULL;
+//  m_pYUV420Buffer    = NULL;
+//  m_pSwrBuffer       = NULL;
+  
+  m_videoWidth   = 0;
+  m_videoHeight  = 0;
+  
+  m_videoPathString = "";
+  
+  m_videoStreamIdx = -1;
+  m_audioStreamIdx = -1;
+  
+  m_bReadFileEOF   = false;
+  
+//  m_nSeekingPos      = 0;
+  
+  
+//  m_nCurrAudioTimeStamp = 0.0f;
+//  m_nLastAudioTimeStamp = 0.0f;
+  
+//  m_sampleRate = 44100;
+//  m_sampleSize = 16;
+//  m_channel    = 2;
+  
+//  m_volumeRatio = 1.0f;
+//  m_swrBuffSize = 0;
+  
+  m_vStreamTimeRational = av_make_q(0,0);
+  m_aStreamTimeRational = av_make_q(0,0);
+  
+//  m_mediaType = MEDIATYPE_VIDEO;
+  m_eMediaPlayStatus = MediaPlayStatusStop;
 }

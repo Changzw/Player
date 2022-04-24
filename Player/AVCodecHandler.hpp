@@ -63,6 +63,11 @@ private:
   void waitAllTreadsExit();
   
   void stdThreadSleep(int mseconds);
+  
+  void     readMediaPacket();
+  void     freePacket(AVPacket* pkt);
+  void     resetAllMediaPlayerParameters();
+  
 private:
   int         m_videoWidth = 0;
   int         m_videoHeight = 0;
@@ -73,9 +78,9 @@ private:
     音频：
     视频：
    */
-  AVFormatContext *m_pformatCtx = NULL;
-  int             m_videoStreamIndex = -1;// why not 0?
-  int             m_audioStreamIndex = -1;
+  AVFormatContext *m_pFormatCtx = NULL;
+  int             m_videoStreamIdx = -1;// why not 0?
+  int             m_audioStreamIdx = -1;
   
   AVCodecContext  *m_pVideoCodecCtx = NULL;
   AVCodecContext  *m_pAudioCodecCtx = NULL;
@@ -84,16 +89,19 @@ private:
   AVRational      m_vStreamTimeRational;
   AVRational      m_aStreamTimeRational;
   
+  // 编码了的数据 ACC，H.264
   MediaQueue<AVPacket *> m_audioPacketQueue;
   MediaQueue<AVPacket *> m_videoPacketQueue;
+  
+  // 解码后的数据 YUV，PCM
+  AVFrame         *m_pVideoFrame = NULL;
+  AVFrame         *m_pAudioFrame = NULL;
   
   MediaPlayStatus m_eMediaPlayStatus;
   bool            m_bReadFileEOF = false;
   
   
-  void     readMediaPacket();
-  void     freePacket(AVPacket* pkt);
-  
+
 };
 
 
