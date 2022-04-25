@@ -219,12 +219,13 @@ void AVCodecHandler::doAudioDecodePlayThread(){
     
     AVPacket *pkt = (AVPacket *)m_audioPacketQueue.dequeue();
     if (pkt == NULL) {
-      break;;
+      break;
     }
     if (!m_bThreadRunning) {
       freePacket(pkt);
       break;
     }
+    tickAudioFrameTimerDelay(pkt->pts);
     
     int retValue = avcodec_send_packet(m_pAudioCodecCtx, pkt);
     if (retValue != 0) {
@@ -269,6 +270,7 @@ void AVCodecHandler::doVideoDecodePlayThread(){
       freePacket(pkt);
       break;
     }
+    tickVideoFrameTimerDelay(pkt->pts);
     
     int retValue = avcodec_send_packet(m_pVideoCodecCtx, pkt);
     if (retValue != 0) {
@@ -287,6 +289,42 @@ void AVCodecHandler::doVideoDecodePlayThread(){
   
   m_bThreadRunning = false;
   printf("video decode shw thread exit...\n");
+}
+
+float AVCodecHandler::getAudioTimestampFramPTS(int64_t pts){
+  float aTimeStamp = pts * av_q2d(m_aStreamTimeRational);
+  return aTimeStamp;
+}
+
+float AVCodecHandler::getVideoTimestampFramPTS(int64_t pts){
+  float vTimeStamp = pts * av_q2d(m_vStreamTimeRational);
+  return vTimeStamp;
+}
+
+void AVCodecHandler::tickVideoFrameTimerDelay(int64_t pts){
+  if (m_vStreamTimeRational.den <= 0) {
+    return;
+  }
+  float currentVideoTimestamp = getVideoTimestampFramPTS(pts);
+  float diffTime = (currentVideoTimestamp - m_nLastAudioTimestamp) * 1000;
+  int sleepTime = (int)diffTime;
+  if (sleepTime > 0 && sleepTime < 5000) {
+    stdThreadSleep(sleepTime);
+  }
+}
+
+void AVCodecHandler::tickAudioFrameTimerDelay(int64_t pts){
+  if (m_aStreamTimeRational.den <= 0) {
+    return;
+  }
+  m_nCurrentAudioTimestamp = getAudioTimestampFramPTS(pts);
+  int diffTime = (int)(m_nCurrentAudioTimestamp - m_nLastAudioTimestamp);
+  if (abs(diffTime) >= 1) {
+    // 更新pts 到GUI 界面上
+    
+  }
+  m_nLastAudioTimestamp = m_nCurrentAudioTimestamp;
+  return;
 }
 
 void AVCodecHandler::freePacket(AVPacket* pkt) {

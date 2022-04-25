@@ -55,6 +55,9 @@ public:
   void        stopPlayVideo();
   
 private:
+  void  tickVideoFrameTimerDelay(int64_t pts);
+  void  tickAudioFrameTimerDelay(int64_t pts);
+  
   void doReadMediaFrameThread();
   void doAudioDecodePlayThread();
   void doVideoDecodePlayThread();
@@ -67,6 +70,12 @@ private:
   void     readMediaPacket();
   void     freePacket(AVPacket* pkt);
   void     resetAllMediaPlayerParameters();
+  
+  /*
+   用音频同步视频，因为音频是根据 44100 2 16，三个参数播的，而帧组，帧组内的帧是不确定的
+   */
+  float    getAudioTimestampFramPTS(int64_t pts);
+  float    getVideoTimestampFramPTS(int64_t pts);// 让音频等视频
   
 private:
   int         m_videoWidth = 0;
@@ -100,7 +109,8 @@ private:
   MediaPlayStatus m_eMediaPlayStatus;
   bool            m_bReadFileEOF = false;
   
-  
+  float           m_nCurrentAudioTimestamp  = 0.0f;
+  float           m_nLastAudioTimestamp     = 0.0f;
 
 };
 
