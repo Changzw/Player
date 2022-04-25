@@ -9,6 +9,10 @@
 #include "QueueDef.h"
 #include "YUVDataDefine.h"
 
+#if !defined(MIN)
+#define MIN(A,B)  ((A) < (B) ? (A) : (B))
+#endif
+
 std::atomic<bool> m_bThreadRunning(false);// 在多线程中是原子操作
 
 AVCodecHandler::AVCodecHandler() {
@@ -289,6 +293,92 @@ void AVCodecHandler::doVideoDecodePlayThread(){
   
   m_bThreadRunning = false;
   printf("video decode shw thread exit...\n");
+}
+
+void AVCodecHandler::convertAndRenderVideo(AVFrame* videoFrame,long long ppts){
+  if(videoFrame == NULL){
+    return;
+  }
+  
+  if(m_pVideoSwsCtx == NULL) {
+    //获取sws上下文, MP4,H.264 不需要，因为解码后就是 YUV420
+    m_pVideoSwsCtx = sws_getContext(m_pVideoCodecCtx->width,m_pVideoCodecCtx->height,
+                                    m_pVideoCodecCtx->pix_fmt,
+                                    m_pVideoCodecCtx->width,m_pVideoCodecCtx->height,
+                                    AV_PIX_FMT_YUV420P,
+                                    SWS_BICUBIC,NULL,NULL,NULL);
+  }
+  // 视频转码，很耗 cpu
+  sws_scale(m_pVideoSwsCtx, (const uint8_t* const*)videoFrame->data,
+            videoFrame->linesize, 0,
+            m_pVideoCodecCtx->height,
+            m_pYUVFrame->data,
+            m_pYUVFrame->linesize);
+  
+  // Y:分量等于h x w, U h/2 x w/2 V h/2 x w/2, | 32--字节对齐
+  unsigned int lumaLength   = m_pVideoCodecCtx->height * (MIN(videoFrame->linesize[0], m_pVideoCodecCtx->width));
+  unsigned int chromBLength = ((m_pVideoCodecCtx->height)/2) * (MIN(videoFrame->linesize[1], (m_pVideoCodecCtx->width)/2));
+  unsigned int chromRLength = ((m_pVideoCodecCtx->height)/2) * (MIN(videoFrame->linesize[2], (m_pVideoCodecCtx->width)/2));
+  
+  YUVData_Frame *updateYUVFrame = new YUVData_Frame();
+  
+  updateYUVFrame->luma.length = lumaLength;
+  updateYUVFrame->chromaB.length = chromBLength;
+  updateYUVFrame->chromaR.length =chromRLength;
+  
+  updateYUVFrame->luma.dataBuffer=(unsigned char*)malloc(lumaLength);
+  updateYUVFrame->chromaB.dataBuffer=(unsigned char*)malloc(chromBLength);
+  updateYUVFrame->chromaR.dataBuffer=(unsigned char*)malloc(chromRLength);
+  
+  copyDecodedFrame420(m_pYUVFrame->data[0],updateYUVFrame->luma.dataBuffer,m_pYUVFrame->linesize[0],
+                      m_pVideoCodecCtx->width,m_pVideoCodecCtx->height);
+  copyDecodedFrame420(m_pYUVFrame->data[1], updateYUVFrame->chromaB.dataBuffer,m_pYUVFrame->linesize[1],
+                      m_pVideoCodecCtx->width / 2,m_pVideoCodecCtx->height / 2);
+  copyDecodedFrame420(m_pYUVFrame->data[2], updateYUVFrame->chromaR.dataBuffer,m_pYUVFrame->linesize[2],
+                      m_pVideoCodecCtx->width / 2,m_pVideoCodecCtx->height / 2);
+  
+  updateYUVFrame->width=m_pVideoCodecCtx->width;
+  updateYUVFrame->height=m_pVideoCodecCtx->height;
+  
+  updateYUVFrame->pts = ppts;
+  
+  if(m_updateVideoCallback) {
+    m_updateVideoCallback(updateYUVFrame, m_userDataVideo);
+  }
+  
+  if(updateYUVFrame->luma.dataBuffer){
+    free(updateYUVFrame->luma.dataBuffer);
+    updateYUVFrame->luma.dataBuffer=NULL;
+  }
+  
+  if(updateYUVFrame->chromaB.dataBuffer){
+    free(updateYUVFrame->chromaB.dataBuffer);
+    updateYUVFrame->chromaB.dataBuffer=NULL;
+  }
+  
+  if(updateYUVFrame->chromaR.dataBuffer){
+    free(updateYUVFrame->chromaR.dataBuffer);
+    updateYUVFrame->chromaR.dataBuffer=NULL;
+  }
+  
+  if(updateYUVFrame){
+    delete updateYUVFrame;
+    updateYUVFrame = NULL;
+  }
+}
+void AVCodecHandler::convertAndPlayAudio(AVFrame* decodedFrame){
+  
+}
+void AVCodecHandler::copyDecodedFrame(uint8_t* src, uint8_t* dist,int linesize, int width, int height){
+  
+}
+void AVCodecHandler::copyDecodedFrame420(uint8_t* src, uint8_t* dist,int linesize, int width, int height){
+  width = MIN(linesize, width);
+  for (int i=0; i<height; ++i) {
+    memcpy(dist, src, width);
+    dist += width;
+    src += linesize;
+  }
 }
 
 float AVCodecHandler::getAudioTimestampFramPTS(int64_t pts){

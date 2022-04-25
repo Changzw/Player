@@ -16,14 +16,23 @@
 
 #include <stdio.h>
 #include "QueueDef.h"
+#include "YUVDataDefine.h"
+
+#ifndef int64
+#define int64 long long
+#endif
 
 extern "C" {
   #include <libavformat/avformat.h>
   #include <libavcodec/avcodec.h>
-
+  #include <libswresample/swresample.h>
   #include <libswscale/swscale.h>
   #include <libavutil/avutil.h>
 }
+
+typedef void  (*UpdateVideo2GUI_Callback)    (YUVData_Frame* yuv,unsigned long userData);
+typedef void  (*UpdateAudio2GUI_Callback)    (unsigned char* pcmBuff,unsigned int size ,unsigned long userData);
+typedef void  (*UpdateCurrentPTS_Callback)   (float pts,unsigned long userData);
 
 enum MediaType {
   MediaTypeVideo = 0,
@@ -55,6 +64,11 @@ public:
   void        stopPlayVideo();
   
 private:
+  void     convertAndRenderVideo(AVFrame* decodedFrame,long long ppts);
+  void     convertAndPlayAudio(AVFrame* decodedFrame);
+  void     copyDecodedFrame(uint8_t* src, uint8_t* dist,int linesize, int width, int height);
+  void     copyDecodedFrame420(uint8_t* src, uint8_t* dist,int linesize, int width, int height);
+
   void  tickVideoFrameTimerDelay(int64_t pts);
   void  tickAudioFrameTimerDelay(int64_t pts);
   
@@ -94,6 +108,9 @@ private:
   AVCodecContext  *m_pVideoCodecCtx = NULL;
   AVCodecContext  *m_pAudioCodecCtx = NULL;
   
+  SwrContext      *m_pAudioSwrCtx = NULL;
+  SwsContext      *m_pVideoSwsCtx = NULL;
+
   // 时间基
   AVRational      m_vStreamTimeRational;
   AVRational      m_aStreamTimeRational;
@@ -106,6 +123,17 @@ private:
   AVFrame         *m_pVideoFrame = NULL;
   AVFrame         *m_pAudioFrame = NULL;
   
+  AVFrame         *m_pYUVFrame   = NULL;
+  
+  unsigned long               m_userDataVideo=0;
+  UpdateVideo2GUI_Callback    m_updateVideoCallback = NULL;
+  
+  unsigned long               m_userDataAudio=0;
+  UpdateAudio2GUI_Callback    m_updateAudioCallback = NULL;
+  
+  unsigned long               m_userDataPts=0;
+  UpdateCurrentPTS_Callback   m_updateCurrentPTSCallback = NULL;
+
   MediaPlayStatus m_eMediaPlayStatus;
   bool            m_bReadFileEOF = false;
   
